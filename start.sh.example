@@ -1,0 +1,31 @@
+#!/bin/bash
+# ==============================================================================
+# Hermes Agent - Custom Container Startup Script Example
+# Place this file as `/home/container/start.sh` inside your Pterodactyl server
+# ==============================================================================
+
+set -e
+
+echo "[HERMES] Initializing environment..."
+
+export HOME=/home/container
+export HERMES_HOME=/home/container/.hermes
+
+# Setup Python virtualenv if not already present
+if [ ! -d "/home/container/hermes-core/venv" ]; then
+    echo "[HERMES] Virtual environment not found, creating..."
+    python3 -m venv /home/container/hermes-core/venv
+fi
+
+# Activate virtualenv
+source /home/container/hermes-core/venv/bin/activate
+
+# Add local packages to PYTHONPATH and PATH
+export PYTHONPATH="/home/container/hermes-core/venv/lib/python3.11/site-packages:/home/container/hermes-core:$PYTHONPATH"
+export PATH="/home/container/hermes-core/venv/bin:$PATH"
+
+# Run Hermes Agent Gateway
+PROFILE=${HERMES_PROFILE:-default}
+echo "[HERMES] Starting Hermes Agent Gateway (Profile: ${PROFILE})..."
+
+exec python3 -m hermes_cli.main --profile "${PROFILE}" gateway run

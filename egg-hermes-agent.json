@@ -1,0 +1,64 @@
+{
+    "_comment": "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2026-09-30T05:34:00+07:00",
+    "name": "Hermes Agent 🦹",
+    "author": "rndsa@users.noreply.github.com",
+    "description": "Autonomous AI Agent & Telegram Gateway (Hermes Agent by Nous Research)",
+    "features": [],
+    "docker_images": {
+        "Python 3.11": "ghcr.io/ptero-eggs/yolks:python_3.11",
+        "Playwright Python 3.11 (Headless Browser)": "ptero-playwright:python_3.11",
+        "Hermes Super-Root (Sudo + Tools + Playwright)": "ptero-hermes-root:latest"
+    },
+    "file_denylist": [],
+    "startup": "export HOME=/home/container && export HERMES_HOME=/home/container/.hermes && export PYTHONPATH=/home/container/hermes-core/venv/lib/python3.11/site-packages:/home/container/hermes-core:$PYTHONPATH && export PATH=/home/container/hermes-core/venv/bin:$PATH && if [ -f /home/container/start.sh ]; then bash /home/container/start.sh; else python3 -m hermes_cli.main --profile {{HERMES_PROFILE}} gateway run; fi",
+    "config": {
+        "files": "{}",
+        "startup": "{\"done\":\"Gateway is running\"}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": null,
+            "container": "alpine:3.4",
+            "entrypoint": "ash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Hermes Profile",
+            "description": "Profile to load (e.g. default or custom profile)",
+            "env_variable": "HERMES_PROFILE",
+            "default_value": "default",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Startup Mode",
+            "description": "Startup sub-command for Hermes CLI (gateway run or custom script)",
+            "env_variable": "STARTUP_MODE",
+            "default_value": "gateway run",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string",
+            "field_type": "text"
+        },
+        {
+            "name": "Telegram Bot Token",
+            "description": "Telegram bot token from @BotFather (optional if configured in .env)",
+            "env_variable": "TELEGRAM_BOT_TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string",
+            "field_type": "text"
+        }
+    ]
+}

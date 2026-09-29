@@ -1,0 +1,6 @@
+.DS_Store
+*.log
+.env
+.hermes/
+venv/
+__pycache__/
