@@ -5,17 +5,17 @@
         "update_url": null
     },
     "exported_at": "2026-09-30T05:34:00+07:00",
-    "name": "Hermes Agent 🦹",
-    "author": "rndsa@users.noreply.github.com",
+    "name": "Hermes Agent \ud83e\udebd",
+    "author": "adm@axjet.xyz",
     "description": "Autonomous AI Agent & Telegram Gateway (Hermes Agent by Nous Research)",
     "features": [],
     "docker_images": {
-        "Python 3.11": "ghcr.io/ptero-eggs/yolks:python_3.11",
+        "Python 3.11": "ghcr.io\/ptero-eggs\/yolks:python_3.11",
         "Playwright Python 3.11 (Headless Browser)": "ptero-playwright:python_3.11",
         "Hermes Super-Root (Sudo + Tools + Playwright)": "ptero-hermes-root:latest"
     },
     "file_denylist": [],
-    "startup": "export HOME=/home/container && export HERMES_HOME=/home/container/.hermes && export PYTHONPATH=/home/container/hermes-core/venv/lib/python3.11/site-packages:/home/container/hermes-core:$PYTHONPATH && export PATH=/home/container/hermes-core/venv/bin:$PATH && if [ -f /home/container/start.sh ]; then bash /home/container/start.sh; else python3 -m hermes_cli.main --profile {{HERMES_PROFILE}} gateway run; fi",
+    "startup": "export HOME=\/home\/container && export HERMES_HOME=\/home\/container\/.hermes && export PYTHONPATH=\/home\/container\/hermes-core\/venv\/lib\/python3.11\/site-packages:\/home\/container\/hermes-core:$PYTHONPATH && export PATH=\/home\/container\/hermes-core\/venv\/bin:$PATH && if [ -f \/home\/container\/start.sh ]; then bash \/home\/container\/start.sh; else python3 -m hermes_cli.main --profile {{HERMES_PROFILE}} gateway run; fi",
     "config": {
         "files": "{}",
         "startup": "{\"done\":\"Gateway is running\"}",
@@ -32,9 +32,9 @@
     "variables": [
         {
             "name": "Hermes Profile",
-            "description": "Profile to load (e.g. default or custom profile)",
+            "description": "Profile to load (bot2 or default)",
             "env_variable": "HERMES_PROFILE",
-            "default_value": "default",
+            "default_value": "bot2",
             "user_viewable": true,
             "user_editable": true,
             "rules": "required|string",
@@ -42,7 +42,7 @@
         },
         {
             "name": "Startup Mode",
-            "description": "Startup sub-command for Hermes CLI (gateway run or custom script)",
+            "description": "Gateway or custom command",
             "env_variable": "STARTUP_MODE",
             "default_value": "gateway run",
             "user_viewable": true,
@@ -52,7 +52,7 @@
         },
         {
             "name": "Telegram Bot Token",
-            "description": "Telegram bot token from @BotFather (optional if configured in .env)",
+            "description": "Token bot Telegram dari @BotFather (opsional jika sudah diisi di .env)",
             "env_variable": "TELEGRAM_BOT_TOKEN",
             "default_value": "",
             "user_viewable": true,
