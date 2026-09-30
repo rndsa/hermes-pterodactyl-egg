@@ -1,31 +1,95 @@
 #!/bin/bash
 # ==============================================================================
-# Hermes Agent - Custom Container Startup Script Example
+# Hermes Agent (Super-VPS 99%) - Dual-Engine Container Startup Script
 # Place this file as `/home/container/start.sh` inside your Pterodactyl server
 # ==============================================================================
 
 set -e
 
-echo "[HERMES] Initializing environment..."
-
 export HOME=/home/container
 export HERMES_HOME=/home/container/.hermes
+export PYTHONPATH=/home/container/hermes-core/venv/lib/python3.11/site-packages:/home/container/hermes-core:$PYTHONPATH
+export PATH=/home/container/bin:/home/container/hermes-core/venv/bin:$PATH
 
-# Setup Python virtualenv if not already present
+PROFILE="${HERMES_PROFILE:-default}"
+if [ "$PROFILE" = "default" ]; then
+    TARGET_DIR="/home/container/.hermes"
+else
+    TARGET_DIR="/home/container/.hermes/profiles/$PROFILE"
+    mkdir -p "$TARGET_DIR"
+fi
+
+# Ensure Python virtual environment exists
 if [ ! -d "/home/container/hermes-core/venv" ]; then
     echo "[HERMES] Virtual environment not found, creating..."
     python3 -m venv /home/container/hermes-core/venv
 fi
 
-# Activate virtualenv
 source /home/container/hermes-core/venv/bin/activate
 
-# Add local packages to PYTHONPATH and PATH
-export PYTHONPATH="/home/container/hermes-core/venv/lib/python3.11/site-packages:/home/container/hermes-core:$PYTHONPATH"
-export PATH="/home/container/hermes-core/venv/bin:$PATH"
+# Sync Telegram Bot Token if passed via panel startup tab
+if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ "$TELEGRAM_BOT_TOKEN" != "" ]; then
+    if [ -f "$TARGET_DIR/.env" ]; then
+        if grep -q '^TELEGRAM_BOT_TOKEN=' "$TARGET_DIR/.env"; then
+            sed -i "s|^TELEGRAM_BOT_TOKEN=.*|TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN|" "$TARGET_DIR/.env"
+        else
+            echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" >> "$TARGET_DIR/.env"
+        fi
+    else
+        echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN" > "$TARGET_DIR/.env"
+    fi
+fi
 
-# Run Hermes Agent Gateway
-PROFILE=${HERMES_PROFILE:-default}
-echo "[HERMES] Starting Hermes Agent Gateway (Profile: ${PROFILE})..."
+# Boot managed services via psvc supervisor if services.json exists
+if [ -f /home/container/services.json ] && command -v psvc &>/dev/null; then
+    echo "[SUPERVISOR] Booting services defined in services.json..."
+    psvc boot >> /home/container/logs/psvc-boot.log 2>&1 &
+fi
 
-exec python3 -m hermes_cli.main --profile "${PROFILE}" gateway run
+# Start psvc background supervisor daemon
+if command -v psvc &>/dev/null; then
+    echo "[SUPERVISOR] Starting psvc supervisor loop..."
+    psvc supervise >> /home/container/logs/psvc-supervisor.log 2>&1 &
+fi
+
+MODE="${STARTUP_MODE:-interactive}"
+
+case "$MODE" in
+    gateway_only)
+        echo "[HERMES] Running in Gateway Only mode..."
+        if [ "$PROFILE" = "default" ]; then
+            exec python3 -m hermes_cli.main gateway run
+        else
+            exec python3 -m hermes_cli.main --profile "$PROFILE" gateway run
+        fi
+        ;;
+    bash)
+        echo "[HERMES] Interactive Bash mode initiated..."
+        exec /bin/bash
+        ;;
+    interactive|*)
+        echo "[HERMES] Running Dual-Engine mode (Interactive Console + Background Gateway)..."
+        mkdir -p /home/container/logs
+        > /home/container/logs/gateway.log
+        
+        # Spawn Telegram Gateway daemon in background with auto-restart loop
+        (
+            while true; do
+                if [ "$PROFILE" = "default" ]; then
+                    python3 -m hermes_cli.main gateway run >> /home/container/logs/gateway.log 2>&1
+                else
+                    python3 -m hermes_cli.main --profile "$PROFILE" gateway run >> /home/container/logs/gateway.log 2>&1
+                fi
+                sleep 5
+            done
+        ) &
+        GATEWAY_PID=$!
+        
+        # Launch official Hermes interactive CLI in foreground console
+        if [ "$PROFILE" = "default" ]; then
+            exec python3 -m hermes_cli.main
+        else
+            exec python3 -m hermes_cli.main --profile "$PROFILE"
+        fi
+        ;;
+esac
