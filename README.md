@@ -1,4 +1,4 @@
-# Hermes Agent — Pterodactyl Super-VPS (99% Parity) Egg
+# Hermes Agent — Pterodactyl Egg
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform: Pterodactyl](https://img.shields.io/badge/Platform-Pterodactyl%20Panel-007ACC.svg)](https://pterodactyl.io/)
@@ -7,7 +7,7 @@
 [![Supervisor: psvc](https://img.shields.io/badge/Supervisor-psvc%20(No--Systemd)-00d992.svg)]()
 [![Author: ren](https://img.shields.io/badge/Author-ren%20(%40rskl411_)-ff70a6.svg)](https://instagram.com/rskl411_)
 
-> Production-grade Pterodactyl Panel Egg engineered for deploying autonomous AI agents ([Hermes Agent by Nous Research](https://github.com/NousResearch/Hermes-Agent)) inside isolated server containers with 99% VPS capability parity.
+> Production-grade Pterodactyl Panel Egg engineered for deploying autonomous AI agents ([Hermes Agent by Nous Research](https://github.com/NousResearch/Hermes-Agent)) inside isolated server containers.
 
 ---
 
@@ -15,6 +15,8 @@
 
 Arsitektur egg ini dirancang khusus untuk mengatasi keterbatasan umum container game server pada Pterodactyl:
 
+* **99% VPS Capability Parity**:
+  * Menghadirkan kapabilitas setara 99% VPS penuh di dalam sandbox container Pterodactyl (interactive TUI shell, continuous background daemon, supervisor proses multi-layanan, otomasi browser headless, dan public port tunneling tanpa dependensi alokasi port panel).
 * **Dual-Engine Execution Mode (`start.sh`)**:
   * **Foreground Console**: Web terminal panel langsung memuat CLI interaktif resmi Hermes Agent (Caduceus ASCII art, live status bar, chat langsung, dan eksekusi tools real-time).
   * **Background Gateway**: Daemon polling Telegram aktif 24/7 di latar belakang dengan proteksi auto-restart loop (`/home/container/gateway.log`).
@@ -51,7 +53,7 @@ Sebagai transparansi teknis, berikut beberapa batasan operasional pada environme
 ### 2. Buat Server Instance
 1. Masuk ke menu **Servers** &rarr; **Create New**.
 2. Alokasikan resource (Rekomendasi: CPU 200%+, RAM minimum 2048 MB, Disk 10 GB+).
-3. Pada bagian **Nest Configuration**, pilih egg **Hermes Agent (Super-VPS 99%)**.
+3. Pada bagian **Nest Configuration**, pilih egg **Hermes Agent**.
 4. Pilih Docker Image:
    * `ptero-hermes-root:latest` *(Sangat Disarankan)*: Mendukung Playwright, passwordless sudo, dan tools sistem lengkap.
    * `ghcr.io/ptero-eggs/yolks:python_3.11`: Image standar Python resmi yolks.
